@@ -13,7 +13,9 @@ end
 function love.update(dt)
     if timer > 0 then
         timer = timer - dt
-    else
+    end
+    if timer < 0 then
+        timer = 0
         target.x = -1000
         target.y = -1000
     end
@@ -27,7 +29,7 @@ function love.draw()
     love.graphics.setColor(0, 1, 0)
     love.graphics.setFont(gameFont)
     love.graphics.print("Score: " .. score, 10, 10)
-    love.graphics.print("Time: " .. timer, 500, 10)
+    love.graphics.print("Time: " .. math.ceil(timer), 500, 10)
 
     if timer <= 0 then
         love.graphics.print("Your score: " .. score, 250, 200)
