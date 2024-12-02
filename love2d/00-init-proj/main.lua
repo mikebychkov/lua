@@ -115,5 +115,5 @@ function love.draw()
     -- love.graphics.print("Score2 string key row is " .. scores2["also a key"])
     -- love.graphics.print("Another key example: " .. scores2["keyAsWell"] .. " " .. scores2.keyAsWell)
     -- love.graphics.print("scoreSum = " .. scoreSum)
-    -- love.graphics.print("table last number key = " .. #scores2)
+    love.graphics.print("table last number key = " .. #scores2)
 end
