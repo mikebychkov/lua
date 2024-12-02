@@ -8,6 +8,14 @@ function love.load()
     timer = 10
 
     gameFont = love.graphics.newFont(30)
+
+    sprites = {}
+
+    sprites.sky = love.graphics.newImage('img/sky.png')
+    sprites.target = love.graphics.newImage('img/target.png')
+    sprites.crosshairs = love.graphics.newImage('img/crosshairs.png')
+
+    love.mouse.setVisible(false)
 end
 
 function love.update(dt)
@@ -23,10 +31,16 @@ end
 
 function love.draw()
 
-    love.graphics.setColor(1, 0, 0)
-    love.graphics.circle("fill", target.x, target.y, target.radius)
-
+    love.graphics.setColor(1, 1, 1)
+    drawSprite(sprites.sky, 0, 0)
+    drawSpriteWithShift(sprites.target, target.x, target.y)
     love.graphics.setColor(0, 1, 0)
+    drawSpriteWithShift(sprites.crosshairs, love.mouse.getX(), love.mouse.getY())
+
+    -- love.graphics.setColor(1, 0, 0)
+    -- love.graphics.circle("fill", target.x, target.y, target.radius)
+
+    love.graphics.setColor(0, 0, 0)
     love.graphics.setFont(gameFont)
     love.graphics.print("Score: " .. score, 10, 10)
     love.graphics.print("Time: " .. math.ceil(timer), 500, 10)
@@ -34,6 +48,17 @@ function love.draw()
     if timer <= 0 then
         love.graphics.print("Your score: " .. score, 250, 200)
     end
+end
+
+function drawSpriteWithShift(sprite, x, y)
+
+    local hh = sprite:getHeight() / 2
+    local hw = sprite:getWidth() / 2
+    love.graphics.draw(sprite, x - hh, y - hw)
+end
+
+function drawSprite(sprite, x, y)
+    love.graphics.draw(sprite, x, y)
 end
 
 function isInTarget(x, y)
