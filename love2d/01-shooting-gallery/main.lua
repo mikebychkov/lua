@@ -22,6 +22,7 @@ function love.load()
 end
 
 function love.update(dt)
+
     if gameState == 0 then
         return
     end
@@ -30,8 +31,6 @@ function love.update(dt)
     end
     if timer < 0 then
         timer = 0
-        -- target.x = -1000
-        -- target.y = -1000
         gameState = 0
     end
 end
@@ -44,25 +43,19 @@ function love.draw()
         drawSpriteWithShift(sprites.target, target.x, target.y)
     else
         love.graphics.setColor(0, 0, 0)
-        love.graphics.print("CLICK TO START", 250, 200)
+        love.graphics.printf("CLICK TO START", 0, 250, love.graphics.getWidth(), "center")
     end
     love.graphics.setColor(0, 1, 0)
     drawSpriteWithShift(sprites.crosshairs, love.mouse.getX(), love.mouse.getY())
 
-    -- love.graphics.setColor(1, 0, 0)
-    -- love.graphics.circle("fill", target.x, target.y, target.radius)
-
     love.graphics.setColor(0, 0, 0)
     love.graphics.setFont(gameFont)
     love.graphics.print("Score: " .. score, 10, 10)
-    love.graphics.print("Time: " .. math.ceil(timer), 500, 10)
-
---     if timer <= 0 then
---         love.graphics.print("Your score: " .. score, 250, 200)
---     end
+    love.graphics.printf("Time: " .. math.ceil(timer), 0, 10, love.graphics.getWidth() - 10, "right")
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
+
     if button ~= 1 then -- not primary button
         return
     end
@@ -80,6 +73,7 @@ end
 -- FUNCTIONS
 
 function reset()
+
     score = 0
     timer = 10
 end
@@ -92,6 +86,7 @@ function drawSpriteWithShift(sprite, x, y)
 end
 
 function drawSprite(sprite, x, y)
+
     love.graphics.draw(sprite, x, y)
 end
 
@@ -117,6 +112,7 @@ function isInTarget2(x, y)
 end
 
 function placeTheTarget()
+
     target.x = math.random(target.radius, love.graphics.getWidth() - target.radius)
     target.y = math.random(target.radius, love.graphics.getHeight() - target.radius)
 end
