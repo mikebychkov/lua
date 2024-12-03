@@ -56,9 +56,9 @@ end
 
 function love.mousepressed(x, y, button, istouch, presses)
 
-    if button ~= 1 then -- not primary button
-        return
-    end
+    -- if button ~= 1 then -- not primary button
+    --     return
+    -- end
     if gameState == 0 then
         reset()
         gameState = 1
@@ -67,6 +67,15 @@ function love.mousepressed(x, y, button, istouch, presses)
     if isInTarget2(x, y) then
         score = score + 1
         placeTheTarget()
+        if button == 2 then
+            score = score + 1
+        end
+    else
+        score = score - 1
+        score = math.max(0, score)
+    end
+    if button == 2 then
+       timer = timer - 1
     end
 end
 
