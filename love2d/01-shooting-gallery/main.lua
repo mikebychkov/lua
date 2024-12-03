@@ -1,11 +1,14 @@
+-- EVENTS
+
 function love.load()
+
+    reset()
+    gameState = 0
+
     target = {}
     target.radius = 50
 
     placeTheTarget()
-
-    score = 0
-    timer = 10
 
     gameFont = love.graphics.newFont(30)
 
@@ -19,13 +22,17 @@ function love.load()
 end
 
 function love.update(dt)
+    if gameState == 0 then
+        return
+    end
     if timer > 0 then
         timer = timer - dt
     end
     if timer < 0 then
         timer = 0
-        target.x = -1000
-        target.y = -1000
+        -- target.x = -1000
+        -- target.y = -1000
+        gameState = 0
     end
 end
 
@@ -33,7 +40,12 @@ function love.draw()
 
     love.graphics.setColor(1, 1, 1)
     drawSprite(sprites.sky, 0, 0)
-    drawSpriteWithShift(sprites.target, target.x, target.y)
+    if gameState > 0 then
+        drawSpriteWithShift(sprites.target, target.x, target.y)
+    else
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.print("CLICK TO START", 250, 200)
+    end
     love.graphics.setColor(0, 1, 0)
     drawSpriteWithShift(sprites.crosshairs, love.mouse.getX(), love.mouse.getY())
 
@@ -45,9 +57,31 @@ function love.draw()
     love.graphics.print("Score: " .. score, 10, 10)
     love.graphics.print("Time: " .. math.ceil(timer), 500, 10)
 
-    if timer <= 0 then
-        love.graphics.print("Your score: " .. score, 250, 200)
+--     if timer <= 0 then
+--         love.graphics.print("Your score: " .. score, 250, 200)
+--     end
+end
+
+function love.mousepressed(x, y, button, istouch, presses)
+    if button ~= 1 then -- not primary button
+        return
     end
+    if gameState == 0 then
+        reset()
+        gameState = 1
+        return
+    end
+    if isInTarget2(x, y) then
+        score = score + 1
+        placeTheTarget()
+    end
+end
+
+-- FUNCTIONS
+
+function reset()
+    score = 0
+    timer = 10
 end
 
 function drawSpriteWithShift(sprite, x, y)
@@ -80,16 +114,6 @@ function isInTarget2(x, y)
     local distance = math.sqrt((x - target.x)^2 + (y - target.y)^2)
 
     return distance < target.radius
-end
-
-function love.mousepressed(x, y, button, istouch, presses)
-    if button ~= 1 then -- not primary button
-        return
-    end
-    if isInTarget2(x, y) then
-        score = score + 1
-        placeTheTarget()
-    end
 end
 
 function placeTheTarget()
