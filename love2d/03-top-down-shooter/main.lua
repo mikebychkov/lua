@@ -1,3 +1,4 @@
+---@diagnostic disable: lowercase-global
 
 -- EVENTS -----------------------------------------------------------
 
@@ -14,9 +15,9 @@ function love.load()
     player = {}
     player.x = love.graphics.getWidth() / 2
     player.y = love.graphics.getHeight() / 2
+    player.speed = 2 * 60
+    player.r = 0
 
-    playerMovement = {}
-    resetPlayerMovement()
 end
 
 function love.update(dt)
@@ -24,15 +25,14 @@ function love.update(dt)
         return
     end
     timer = timer + dt
-    movePlayer()
-    -- resetPlayerMovement()
+    movePlayer(dt)
 end
 
 function love.draw()
     love.graphics.setColor(1,1,1)
     love.graphics.draw(sprites.background, 0, 0)
     if gameState > 0 then
-        drawSpriteWithShift(sprites.player, player.x, player.y)
+        drawPlayer()
     else
         drawStartPrompt()
     end
@@ -46,38 +46,29 @@ function love.mousepressed(x, y, button, istouch, presses)
 end
 
 function love.keypressed(key, scancode, isrepeat)
-    -- playerMovement.w = scancode == "w"
-    -- playerMovement.s = scancode == "s"
-    -- playerMovement.d = scancode == "d"
-    -- playerMovement.a = scancode == "a"
 end
 
 -- FUNCTIONS --------------------------------------------------------
 
-function resetPlayerMovement()
-    playerMovement.w = false
-    playerMovement.s = false
-    playerMovement.d = false
-    playerMovement.a = false
-end
-
-function movePlayer()
+function movePlayer(dt)
     if love.keyboard.isDown("w") then
-        player.y = player.y - 1
+        player.y = player.y - player.speed * dt
     end
     if love.keyboard.isDown("s") then
-        player.y = player.y + 1
+        player.y = player.y + player.speed * dt
     end
     if love.keyboard.isDown("d") then
-        player.x = player.x + 1
+        player.x = player.x + player.speed * dt
     end
     if love.keyboard.isDown("a") then
-        player.x = player.x - 1
+        player.x = player.x - player.speed * dt
     end
     player.x = math.max(0, player.x)
     player.y = math.max(0, player.y)
     player.x = math.min(love.graphics.getWidth(), player.x)
     player.y = math.min(love.graphics.getHeight(), player.y)
+
+    player.r = math.atan2(love.mouse.getY() - player.y, love.mouse.getX() - player.x)
 end
 
 function reset()
@@ -95,7 +86,15 @@ function drawSpriteWithShift(sprite, x, y)
 
     local hh = sprite:getHeight() / 2
     local hw = sprite:getWidth() / 2
-    love.graphics.draw(sprite, x - hh, y - hw)
+    love.graphics.draw(sprite, x, y, 0, 1, 1, hw, hh)
+end
+
+function drawPlayer()
+
+    local sprite = sprites.player
+    local hh = sprite:getHeight() / 2
+    local hw = sprite:getWidth() / 2
+    love.graphics.draw(sprite, player.x, player.y, player.r, 1, 1, hw, hh)
 end
 
 function drawSprite(sprite, x, y)
