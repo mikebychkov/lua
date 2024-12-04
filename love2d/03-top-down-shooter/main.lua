@@ -16,10 +16,7 @@ function love.load()
     player.y = love.graphics.getHeight() / 2
 
     playerMovement = {}
-    playerMovement.w = false
-    playerMovement.s = false
-    playerMovement.d = false
-    playerMovement.a = false
+    resetPlayerMovement()
 end
 
 function love.update(dt)
@@ -28,13 +25,14 @@ function love.update(dt)
     end
     timer = timer + dt
     movePlayer()
+    -- resetPlayerMovement()
 end
 
 function love.draw()
     love.graphics.setColor(1,1,1)
     love.graphics.draw(sprites.background, 0, 0)
     if gameState > 0 then
-        love.graphics.draw(sprites.player, player.x, player.y)
+        drawSpriteWithShift(sprites.player, player.x, player.y)
     else
         drawStartPrompt()
     end
@@ -48,27 +46,38 @@ function love.mousepressed(x, y, button, istouch, presses)
 end
 
 function love.keypressed(key, scancode, isrepeat)
-    playerMovement.w = key == "w"
-    playerMovement.s = key == "s"
-    playerMovement.d = key == "d"
-    playerMovement.a = key == "a"
+    -- playerMovement.w = scancode == "w"
+    -- playerMovement.s = scancode == "s"
+    -- playerMovement.d = scancode == "d"
+    -- playerMovement.a = scancode == "a"
 end
 
 -- FUNCTIONS --------------------------------------------------------
 
+function resetPlayerMovement()
+    playerMovement.w = false
+    playerMovement.s = false
+    playerMovement.d = false
+    playerMovement.a = false
+end
+
 function movePlayer()
-    if playerMovement.w then
+    if love.keyboard.isDown("w") then
         player.y = player.y - 1
     end
-    if playerMovement.s then
+    if love.keyboard.isDown("s") then
         player.y = player.y + 1
     end
-    if playerMovement.d then
+    if love.keyboard.isDown("d") then
         player.x = player.x + 1
     end
-    if playerMovement.a then
+    if love.keyboard.isDown("a") then
         player.x = player.x - 1
     end
+    player.x = math.max(0, player.x)
+    player.y = math.max(0, player.y)
+    player.x = math.min(love.graphics.getWidth(), player.x)
+    player.y = math.min(love.graphics.getHeight(), player.y)
 end
 
 function reset()
@@ -82,3 +91,14 @@ function drawStartPrompt()
     love.graphics.printf("CLICK TO START", 0, love.graphics.getHeight() / 2, love.graphics.getWidth(), "center")
 end
 
+function drawSpriteWithShift(sprite, x, y)
+
+    local hh = sprite:getHeight() / 2
+    local hw = sprite:getWidth() / 2
+    love.graphics.draw(sprite, x - hh, y - hw)
+end
+
+function drawSprite(sprite, x, y)
+
+    love.graphics.draw(sprite, x, y)
+end
