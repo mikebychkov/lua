@@ -18,6 +18,7 @@ function love.load()
     player.speed = 2 * 60
     player.r = 0
 
+    zombies = {}
 end
 
 function love.update(dt)
@@ -26,6 +27,9 @@ function love.update(dt)
     end
     timer = timer + dt
     movePlayer(dt)
+    for i,z in ipairs(zombies) do
+        moveZombie(z)
+    end
 end
 
 function love.draw()
@@ -35,6 +39,11 @@ function love.draw()
         drawPlayer()
     else
         drawStartPrompt()
+    end
+    if gameState > 0 then
+        for i,z in ipairs(zombies) do
+            drawZombie(z)
+        end
     end
 end
 
@@ -46,6 +55,10 @@ function love.mousepressed(x, y, button, istouch, presses)
 end
 
 function love.keypressed(key, scancode, isrepeat)
+
+    if key == "space" then
+        spawnZombie()
+    end
 end
 
 -- FUNCTIONS --------------------------------------------------------
@@ -69,6 +82,10 @@ function movePlayer(dt)
     player.y = math.min(love.graphics.getHeight(), player.y)
 
     player.r = math.atan2(love.mouse.getY() - player.y, love.mouse.getX() - player.x)
+end
+
+function moveZombie(z)
+    z.r = math.atan2(player.x - z.y, player.y - z.x)
 end
 
 function reset()
@@ -97,7 +114,46 @@ function drawPlayer()
     love.graphics.draw(sprite, player.x, player.y, player.r, 1, 1, hw, hh)
 end
 
+function drawZombie(z)
+
+    local sprite = sprites.zombie
+    local hh = sprite:getHeight() / 2
+    local hw = sprite:getWidth() / 2
+    love.graphics.draw(sprite, z.x, z.y, z.r, 1, 1, hw, hh)
+end
+
 function drawSprite(sprite, x, y)
 
     love.graphics.draw(sprite, x, y)
+end
+
+function spawnZombie()
+
+    local h = love.graphics.getHeight()
+    local w = love.graphics.getWidth()
+
+    local zombie = {}
+    zombie.x = math.random(w)
+    zombie.y = math.random(h)
+    zombie.r = math.atan2(player.x - zombie.y, player.y - zombie.x)
+    zombie.speed = 100
+
+    local r1 = math.random(2)
+    local r2 = math.random(2)
+
+    local rx = 0
+    local ry = 0
+
+    if r1 == 2 then
+        rx = w
+        ry = h
+    end
+
+    if r2 == 1 then
+        zombie.x = rx
+    else
+        zombie.y = ry
+    end
+
+    table.insert(zombies, zombie)
 end
