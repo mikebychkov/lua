@@ -28,7 +28,7 @@ function love.update(dt)
     timer = timer + dt
     movePlayer(dt)
     for i,z in ipairs(zombies) do
-        moveZombie(z)
+        moveZombie(z, dt)
     end
 end
 
@@ -84,8 +84,10 @@ function movePlayer(dt)
     player.r = math.atan2(love.mouse.getY() - player.y, love.mouse.getX() - player.x)
 end
 
-function moveZombie(z)
-    z.r = math.atan2(player.x - z.y, player.y - z.x)
+function moveZombie(z, dt)
+    z.r = math.atan2(player.y - z.y, player.x - z.x)
+    z.x = z.x + math.cos(z.r) * z.speed * dt
+    z.y = z.y + math.sin(z.r) * z.speed * dt
 end
 
 function reset()
