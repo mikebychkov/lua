@@ -50,8 +50,6 @@ function love.update(dt)
         end
         for bi,b in ipairs(bullets) do
             if distanceBetweenCoordinates(z.x, z.y, b.x, b.y) < 30 then
-                -- table.remove(zombies,zi)
-                -- table.remove(bullets,bi)
                 table.insert(zombiesToRemove, zi)
                 table.insert(bulletsToRemove, bi)
                 score = score + 1
@@ -155,17 +153,6 @@ function moveBullet(b, i, dt)
 
     b.x = b.x + math.cos(b.r) * b.speed * dt
     b.y = b.y + math.sin(b.r) * b.speed * dt
-
-    -- local del = false
-    -- if b.x > love.graphics.getWidth() or b.x < 0 then
-    --     del = true
-    -- end
-    -- if b.y > love.graphics.getHeight() or b.y < 0 then
-    --     del = true
-    -- end
-    -- if del then
-    --     table.remove(bullets, i)
-    -- end
 end
 
 function bulletOffscreen(b)
@@ -251,7 +238,6 @@ function spawnZombie()
     local zombie = {}
     zombie.x = math.random(w)
     zombie.y = math.random(h)
-    zombie.r = math.atan2(player.y - zombie.y, player.x - zombie.x)
     zombie.speed = 100
 
     local r1 = math.random(2)
@@ -270,6 +256,8 @@ function spawnZombie()
     else
         zombie.y = ry
     end
+
+    zombie.r = math.atan2(player.y - zombie.y, player.x - zombie.x)
 
     log = "inserting new zombie in table"
 
