@@ -22,6 +22,8 @@ function love.load()
     zombies = {}
 
     bullets = {}
+
+    log = ""
 end
 
 function love.update(dt)
@@ -41,9 +43,12 @@ function love.update(dt)
         end
         for bi,b in ipairs(bullets) do
             if distanceBetweenCoordinates(z.x, z.y, b.x, b.y) < 30 then
-                zombies[zi] = nil
-                bullets[bi] = nil
+                -- zombies[zi] = nil
+                -- bullets[bi] = nil
+                table.remove(zombies,zi)
+                table.remove(bullets,bi)
                 score = score + 1
+                break
             end
         end
     end
@@ -72,16 +77,22 @@ function love.mousepressed(x, y, button, istouch, presses)
 
     if gameState == 0 then
         gameState = 1
+        reset()
         return
     end
+
+    log = "Zombies: " .. #zombies
 
     shootTheBullet()
 end
 
 function love.keypressed(key, scancode, isrepeat)
 
+    log = "key pressed " .. key .. " " .. love.timer.getTime()
+
     if key == "space" then
         spawnZombie()
+        log = log .. " " .. #zombies
     end
 end
 
@@ -90,7 +101,8 @@ end
 function gameOver()
     gameState = 0
     for i,z in ipairs(zombies) do
-        zombies[i] = nil
+        -- zombies[i] = nil
+        table.remove(zombies,i)
     end
 end
 
@@ -146,6 +158,7 @@ function drawStats()
     love.graphics.setFont(love.graphics.newFont(20))
     love.graphics.print("Score: " .. score, 10, 10)
     love.graphics.printf("Time: " .. math.ceil(timer), 0, 10, love.graphics.getWidth() - 10, "right")
+    -- love.graphics.print(log, 10, 30)
 end
 
 function drawStartPrompt()
@@ -199,7 +212,7 @@ function spawnZombie()
     local zombie = {}
     zombie.x = math.random(w)
     zombie.y = math.random(h)
-    zombie.r = math.atan2(player.x - zombie.y, player.y - zombie.x)
+    zombie.r = math.atan2(player.y - zombie.y, player.x - zombie.x)
     zombie.speed = 100
 
     local r1 = math.random(2)
@@ -218,6 +231,8 @@ function spawnZombie()
     else
         zombie.y = ry
     end
+
+    log = "inserting new zombie in table"
 
     table.insert(zombies, zombie)
 end
