@@ -236,8 +236,6 @@ function spawnZombie()
     local w = love.graphics.getWidth()
 
     local zombie = {}
-    zombie.x = math.random(w)
-    zombie.y = math.random(h)
     zombie.speed = 100
 
     local r1 = math.random(2)
@@ -253,8 +251,10 @@ function spawnZombie()
 
     if r2 == 1 then
         zombie.x = rx
+        zombie.y = math.random(h)
     else
         zombie.y = ry
+        zombie.x = math.random(w)
     end
 
     zombie.r = math.atan2(player.y - zombie.y, player.x - zombie.x)
