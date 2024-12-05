@@ -34,7 +34,7 @@ function love.update(dt)
     timer = timer + dt
     movePlayer(dt)
     for i,b in ipairs(bullets) do
-        moveBullet(b, dt)
+        moveBullet(b, i, dt)
     end
     for zi,z in ipairs(zombies) do
         moveZombie(z, dt)
@@ -43,8 +43,6 @@ function love.update(dt)
         end
         for bi,b in ipairs(bullets) do
             if distanceBetweenCoordinates(z.x, z.y, b.x, b.y) < 30 then
-                -- zombies[zi] = nil
-                -- bullets[bi] = nil
                 table.remove(zombies,zi)
                 table.remove(bullets,bi)
                 score = score + 1
@@ -101,7 +99,6 @@ end
 function gameOver()
     gameState = 0
     for i,z in ipairs(zombies) do
-        -- zombies[i] = nil
         table.remove(zombies,i)
     end
 end
@@ -135,10 +132,21 @@ function moveZombie(z, dt)
     z.y = z.y + math.sin(z.r) * z.speed * dt
 end
 
-function moveBullet(b, dt)
+function moveBullet(b, i, dt)
 
     b.x = b.x + math.cos(b.r) * b.speed * dt
     b.y = b.y + math.sin(b.r) * b.speed * dt
+
+    local del = false
+    if b.x > love.graphics.getWidth() or b.x < 0 then
+        del = true
+    end
+    if b.y > love.graphics.getHeight() or b.y < 0 then
+        del = true
+    end
+    if del then
+        table.remove(bullets, i)
+    end
 end
 
 function reset()
@@ -196,7 +204,7 @@ function drawBullet(b)
     local sprite = sprites.bullet
     local hh = sprite:getHeight() / 2
     local hw = sprite:getWidth() / 2
-    love.graphics.draw(sprite, b.x, b.y, b.r, 1, 1, hw, hh)
+    love.graphics.draw(sprite, b.x, b.y, b.r, 0.5, 0.5, hw, hh)
 end
 
 function drawSprite(sprite, x, y)
