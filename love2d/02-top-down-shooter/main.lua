@@ -33,8 +33,15 @@ function love.update(dt)
     end
     timer = timer + dt
     movePlayer(dt)
+
+    local bulletsToRemove = {}
+    local zombiesToRemove = {}
+
     for i,b in ipairs(bullets) do
         moveBullet(b, i, dt)
+        if bulletOffscreen(b) then
+            table.insert(bulletsToRemove, i)
+        end
     end
     for zi,z in ipairs(zombies) do
         moveZombie(z, dt)
@@ -43,13 +50,18 @@ function love.update(dt)
         end
         for bi,b in ipairs(bullets) do
             if distanceBetweenCoordinates(z.x, z.y, b.x, b.y) < 30 then
-                table.remove(zombies,zi)
-                table.remove(bullets,bi)
+                -- table.remove(zombies,zi)
+                -- table.remove(bullets,bi)
+                table.insert(zombiesToRemove, zi)
+                table.insert(bulletsToRemove, bi)
                 score = score + 1
                 break
             end
         end
     end
+
+    removeFromTable(bullets, bulletsToRemove)
+    removeFromTable(zombies, zombiesToRemove)
 end
 
 function love.draw()
@@ -132,10 +144,31 @@ function moveZombie(z, dt)
     z.y = z.y + math.sin(z.r) * z.speed * dt
 end
 
+function removeFromTable(t, ids)
+
+    for i,id in ipairs(ids) do
+        table.remove(t, id)
+    end
+end
+
 function moveBullet(b, i, dt)
 
     b.x = b.x + math.cos(b.r) * b.speed * dt
     b.y = b.y + math.sin(b.r) * b.speed * dt
+
+    -- local del = false
+    -- if b.x > love.graphics.getWidth() or b.x < 0 then
+    --     del = true
+    -- end
+    -- if b.y > love.graphics.getHeight() or b.y < 0 then
+    --     del = true
+    -- end
+    -- if del then
+    --     table.remove(bullets, i)
+    -- end
+end
+
+function bulletOffscreen(b)
 
     local del = false
     if b.x > love.graphics.getWidth() or b.x < 0 then
@@ -144,9 +177,7 @@ function moveBullet(b, i, dt)
     if b.y > love.graphics.getHeight() or b.y < 0 then
         del = true
     end
-    if del then
-        table.remove(bullets, i)
-    end
+    return del
 end
 
 function reset()
