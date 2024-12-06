@@ -11,6 +11,7 @@ function love.load()
     sprites.bullet = love.graphics.newImage('img/bullet.png')
     sprites.player = love.graphics.newImage('img/player.png')
     sprites.zombie = love.graphics.newImage('img/zombie.png')
+    sprites.medkit = love.graphics.newImage('img/medkit.png')
 
     gameState = 0
     reset()
@@ -24,6 +25,8 @@ function love.load()
     zombies = {}
 
     bullets = {}
+
+    medkits = {}
 
     maxSpawnTime = 5
 
@@ -40,6 +43,7 @@ function love.update(dt)
 
     local bulletsToRemove = {}
     local zombiesToRemove = {}
+    local medkitsToRemove = {}
 
     for i,b in ipairs(bullets) do
         moveBullet(b, i, dt)
@@ -50,6 +54,10 @@ function love.update(dt)
     for zi,z in ipairs(zombies) do
         moveZombie(z, dt)
         if distanceBetweenCoordinates(z.x, z.y, player.x, player.y) < 30 then
+            lives = lives - 1
+            table.insert(zombiesToRemove, zi)
+        end
+        if lives <= 0 then
             gameOver()
         end
         for bi,b in ipairs(bullets) do
@@ -61,20 +69,27 @@ function love.update(dt)
             end
         end
     end
+    for i,m in ipairs(medkits) do
+        if distanceBetweenCoordinates(m.x, m.y, player.x, player.y) < 30 then
+            lives = lives + 1
+            lives = math.min(2, lives)
+            table.insert(medkitsToRemove, i)
+        end
+    end
 
     removeFromTable(bullets, bulletsToRemove)
     removeFromTable(zombies, zombiesToRemove)
+    removeFromTable(medkits, medkitsToRemove)
 
     spawnTimer = spawnTimer - dt
     if spawnTimer <= 0 then
-        local multiplier = 1
-        if multiplier < 10 then
-            multiplier = multiplier + math.ceil(spawnCounter / 5)
-        end
+        local multiplier = 1 + math.ceil(spawnCounter / 5)
+        multiplier = math.min(10, multiplier)
         for i = 1, multiplier do
             spawnZombie()
         end
         spawnTimer = scaleSpawnTimer()
+        spawnMedkit()
     end
 end
 
@@ -92,6 +107,9 @@ function love.draw()
         end
         for i,b in ipairs(bullets) do
             drawBullet(b)
+        end
+        for i,m in ipairs(medkits) do
+            drawMedkit(m)
         end
     end
     drawStats()
@@ -126,6 +144,9 @@ function gameOver()
     gameState = 0
     for i = #zombies, 1, -1 do
         table.remove(zombies,i)
+    end
+    for i = #medkits, 1, -1 do
+        table.remove(medkits,i)
     end
 end
 
@@ -184,7 +205,7 @@ function bulletOffscreen(b)
 end
 
 function scaleSpawnTimer()
-    return maxSpawnTime - spawnTimer / 5
+    return maxSpawnTime - timer / 10
 end
 
 function reset()
@@ -192,6 +213,7 @@ function reset()
     timer = 0
     spawnTimer = maxSpawnTime
     spawnCounter = 0
+    lives = 2
 end
 
 function drawBackground()
@@ -216,15 +238,13 @@ function drawStartPrompt()
     love.graphics.printf("CLICK TO START", 0, love.graphics.getHeight() / 2, love.graphics.getWidth(), "center")
 end
 
-function drawSpriteWithShift(sprite, x, y)
-
-    local hh = sprite:getHeight() / 2
-    local hw = sprite:getWidth() / 2
-    love.graphics.draw(sprite, x, y, 0, 1, 1, hw, hh)
-end
-
 function drawPlayer()
 
+    if lives == 1 then
+        love.graphics.setColor(1,0,0)
+    else
+        love.graphics.setColor(1,1,1)
+    end
     local sprite = sprites.player
     local hh = sprite:getHeight() / 2
     local hw = sprite:getWidth() / 2
@@ -233,6 +253,7 @@ end
 
 function drawZombie(z)
 
+    love.graphics.setColor(1,1,1)
     local sprite = sprites.zombie
     local hh = sprite:getHeight() / 2
     local hw = sprite:getWidth() / 2
@@ -241,15 +262,28 @@ end
 
 function drawBullet(b)
 
+    love.graphics.setColor(1,1,1)
     local sprite = sprites.bullet
     local hh = sprite:getHeight() / 2
     local hw = sprite:getWidth() / 2
     love.graphics.draw(sprite, b.x, b.y, b.r, 0.5, 0.5, hw, hh)
 end
 
-function drawSprite(sprite, x, y)
+function drawMedkit(m)
 
-    love.graphics.draw(sprite, x, y)
+    love.graphics.setColor(1,1,1)
+    local sprite = sprites.medkit
+    local hh = sprite:getHeight() / 2
+    local hw = sprite:getWidth() / 2
+    love.graphics.draw(sprite, m.x, m.y, nil, 0.05, 0.05, hw, hh)
+end
+
+function spawnMedkit()
+    
+    local medkit = {}
+    medkit.x = math.random(love.graphics.getWidth())
+    medkit.y = math.random(love.graphics.getHeight())
+    table.insert(medkits, medkit)
 end
 
 function spawnZombie()
