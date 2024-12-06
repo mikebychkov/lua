@@ -60,6 +60,18 @@ function love.update(dt)
 
     removeFromTable(bullets, bulletsToRemove)
     removeFromTable(zombies, zombiesToRemove)
+
+    spawnTimer = spawnTimer - dt
+    if spawnTimer <= 0 then
+        local multiplier = 1
+        if multiplier < 10 then
+            multiplier = multiplier + math.ceil(spawnCounter / 5)
+        end
+        for i = 1, multiplier do
+            spawnZombie()
+        end
+        spawnTimer = scaleSpawnTimer()
+    end
 end
 
 function love.draw()
@@ -108,7 +120,7 @@ end
 
 function gameOver()
     gameState = 0
-    for i,z in ipairs(zombies) do
+    for i = #zombies, 1, -1 do
         table.remove(zombies,i)
     end
 end
@@ -167,9 +179,15 @@ function bulletOffscreen(b)
     return del
 end
 
+function scaleSpawnTimer()
+    return 5 - spawnTimer / 5
+end
+
 function reset()
     score = 0
     timer = 0
+    spawnTimer = 5
+    spawnCounter = 0
 end
 
 function drawBackground()
@@ -260,6 +278,8 @@ function spawnZombie()
     zombie.r = math.atan2(player.y - zombie.y, player.x - zombie.x)
 
     log = "inserting new zombie in table"
+
+    spawnCounter = spawnCounter + 1
 
     table.insert(zombies, zombie)
 end
