@@ -4,6 +4,8 @@
 
 function love.load()
 
+    math.randomseed(os.time())
+
     sprites = {}
     sprites.background = love.graphics.newImage('img/background.png')
     sprites.bullet = love.graphics.newImage('img/bullet.png')
@@ -22,6 +24,8 @@ function love.load()
     zombies = {}
 
     bullets = {}
+
+    maxSpawnTime = 5
 
     log = ""
 end
@@ -180,13 +184,13 @@ function bulletOffscreen(b)
 end
 
 function scaleSpawnTimer()
-    return 5 - spawnTimer / 5
+    return maxSpawnTime - spawnTimer / 5
 end
 
 function reset()
     score = 0
     timer = 0
-    spawnTimer = 5
+    spawnTimer = maxSpawnTime
     spawnCounter = 0
 end
 
