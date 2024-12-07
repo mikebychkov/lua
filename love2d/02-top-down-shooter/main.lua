@@ -21,6 +21,7 @@ function love.load()
     player.y = love.graphics.getHeight() / 2
     player.speed = 2 * 60
     player.r = 0
+    player.lives = 2
 
     zombies = {}
 
@@ -54,10 +55,11 @@ function love.update(dt)
     for zi,z in ipairs(zombies) do
         moveZombie(z, dt)
         if distanceBetweenCoordinates(z.x, z.y, player.x, player.y) < 30 then
-            lives = lives - 1
+            player.lives = player.lives - 1
+            player.speed = 3 * 60
             table.insert(zombiesToRemove, zi)
         end
-        if lives <= 0 then
+        if player.lives <= 0 then
             gameOver()
         end
         for bi,b in ipairs(bullets) do
@@ -71,8 +73,9 @@ function love.update(dt)
     end
     for i,m in ipairs(medkits) do
         if distanceBetweenCoordinates(m.x, m.y, player.x, player.y) < 30 then
-            lives = lives + 1
+            player.lives = player.lives + 1
             lives = math.min(2, lives)
+            player.speed = 2 * 60
             table.insert(medkitsToRemove, i)
         end
     end
@@ -240,7 +243,7 @@ end
 
 function drawPlayer()
 
-    if lives == 1 then
+    if player.lives == 1 then
         love.graphics.setColor(1,0,0)
     else
         love.graphics.setColor(1,1,1)
