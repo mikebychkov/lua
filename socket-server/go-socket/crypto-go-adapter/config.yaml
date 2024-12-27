@@ -1,0 +1,5 @@
+server:
+  tcp-port: ":8081"
+  http-port: ":8080"
+cryptopay:
+  endpoint: "http://crypto-pay:8080/api/v1/pay/transaction-send"
