@@ -68,6 +68,11 @@ function M.setup(params)
         co()
     end)
 
+    -- TODO: insert package in a new file
+    -- TODO: generate implementation for an interface
+    -- TODO: remove unused impoorts
+    -- TODO: optimize imports / resolve imports
+
 end
 
 return M
