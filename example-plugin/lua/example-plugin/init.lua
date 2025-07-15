@@ -56,6 +56,37 @@ function co()
     vim.api.nvim_buf_set_name(0, "Endpoints")
 end
 
+function bl()
+  local file_path = vim.fn.expand('%:p')
+
+  local git_root = vim.fn.systemlist('git rev-parse --show-toplevel')[1]
+  if not git_root or git_root == '' then
+    vim.notify("Not inside a Git repository", vim.log.levels.ERROR)
+    return
+  end
+
+  vim.cmd('vsplit')
+
+  vim.cmd('enew')
+  local blame_buf = vim.api.nvim_get_current_buf()
+  vim.bo[blame_buf].buftype = 'nofile'
+  vim.bo[blame_buf].bufhidden = 'wipe'
+  vim.bo[blame_buf].swapfile = false
+  vim.bo[blame_buf].modifiable = true
+  vim.bo[blame_buf].readonly = false
+
+  local output = vim.fn.systemlist('git blame --date=short ' .. vim.fn.shellescape(file_path))
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_buf_set_lines(blame_buf, 0, -1, false, { 'Error running git blame.' })
+  else
+    vim.api.nvim_buf_set_lines(blame_buf, 0, -1, false, output)
+  end
+
+  vim.api.nvim_buf_set_name(blame_buf, 'Git Blame: ' .. file_path)
+  vim.bo[blame_buf].modifiable = false
+  vim.bo[blame_buf].readonly = true
+end
+
 function M.setup(params)
 
     params = params or {}
@@ -66,6 +97,10 @@ function M.setup(params)
 
     vim.keymap.set("n", "<Leader>co", function()
         co()
+    end)
+
+    vim.keymap.set("n", "<Leader>bl", function()
+        bl()
     end)
 
     -- TODO: insert package in a new file
