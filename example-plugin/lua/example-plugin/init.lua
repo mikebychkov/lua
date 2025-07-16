@@ -87,6 +87,32 @@ function bl()
   vim.bo[blame_buf].readonly = true
 end
 
+function insert_package_and_class_declaration()
+
+  local buf_name = vim.api.nvim_buf_get_name(0)
+
+  local java_root = "/src/main/java/"
+  local idx = string.find(buf_name, java_root, 1, true)
+  if not idx then
+    print("Not a Java file under src/main/java")
+    return
+  end
+
+  local relative_path = string.sub(buf_name, idx + #java_root)
+
+  local class_name = relative_path:match("([^/]+)%.java$")
+  local package_path = relative_path:match("(.+)/[^/]+%.java$")
+  local package_name = package_path and package_path:gsub("/", ".") or ""
+
+  local lines = {}
+  table.insert(lines, "package " .. package_name .. ";")
+  table.insert(lines, "")
+  table.insert(lines, "public class " .. class_name .. " {")
+  table.insert(lines, "}")
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+end
+
 function M.setup(params)
 
     params = params or {}
@@ -101,6 +127,10 @@ function M.setup(params)
 
     vim.keymap.set("n", "<Leader>bl", function()
         bl()
+    end)
+
+    vim.keymap.set("n", "<Leader>cl", function()
+        insert_package_and_class_declaration()
     end)
 
     -- TODO: insert package in a new file
