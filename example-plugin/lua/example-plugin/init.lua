@@ -113,6 +113,12 @@ function insert_package_and_class_declaration()
   vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
 end
 
+function open_terminal_window()
+  vim.cmd("split")
+  vim.cmd("wincmd j")
+  vim.cmd("terminal")
+end
+
 function M.setup(params)
 
     params = params or {}
@@ -131,6 +137,10 @@ function M.setup(params)
 
     vim.keymap.set("n", "<Leader>cl", function()
         insert_package_and_class_declaration()
+    end)
+
+    vim.keymap.set("n", "<Leader>tr", function()
+        open_terminal_window()
     end)
 
     -- TODO: insert package in a new file
