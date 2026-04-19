@@ -50,6 +50,7 @@ function double(num)
     return num
 end
 num = double(num)
+print(num)
 
 --
 
