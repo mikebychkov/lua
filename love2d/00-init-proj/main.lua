@@ -45,12 +45,18 @@ end
 -- FUNCTIONS
 
 num = 33
+n2 = 11
+local n3 = 7
+local n4 = 13
 function double(num)
+    n2 = 44
+    n3 = 8
+    local n4 = 14
     num = num * 2 -- nil arg value raises exception
     return num
 end
 num = double(num)
-print(num)
+print(num, n2, n3, n4)
 
 --
 
@@ -84,6 +90,14 @@ scores[2] = 66
 scores[3] = 77
 
 winScore = scores[3]
+print(winScore)
+
+--
+
+scoreSum = 0;
+for key,value in ipairs(scores) do
+    scoreSum = scoreSum + value
+end
 
 --
 
@@ -95,13 +109,23 @@ scores2["also a key"] = 99
 
 scores2.keyAsWell = 100
 
+table.insert(scores2, 11)
+
+print(scores2)
+
 --
 
-scoreSum = 0;
-for key,value in ipairs(scores) do
-    scoreSum = scoreSum + value
+print("ipairs")
+for key, value in ipairs(scores2) do
+    print(key, value)
 end
 
+--
+
+print("pairs")
+for key, value in pairs(scores2) do
+    print(key, value)
+end
 
 -- LOVE2D MAIN METHOD
 
