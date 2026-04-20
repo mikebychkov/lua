@@ -1,6 +1,6 @@
 -- EVENTS
 
-function love.load()
+function love.load() -- INITIAL METHOD
 
     reset()
     gameState = 0
@@ -21,7 +21,7 @@ function love.load()
     love.mouse.setVisible(false)
 end
 
-function love.update(dt)
+function love.update(dt) -- RUNS EVERY FRAME OF GAME, PARAM: dt - delta time
 
     if gameState == 0 then
         return
@@ -35,7 +35,7 @@ function love.update(dt)
     end
 end
 
-function love.draw()
+function love.draw() -- RUNS EVERY FRAME AS WELL, BUT MUST BE RELATED TO A GRAPHICS 
 
     love.graphics.setColor(1, 1, 1)
     drawSprite(sprites.sky, 0, 0)
